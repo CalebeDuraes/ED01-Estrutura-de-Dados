@@ -1,8 +1,24 @@
 #include <stdio.h>
-#define MAX_SIZE 100
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#define MAX_SIZE 10
 
 typedef struct {
-    int itens[MAX_SIZE];
+    char nome_filme[50];
+    int sala;
+    int horario;
+    float valor;
+} Ingresso;
+
+typedef struct {
+    char nome[50];
+    int idade;
+    Ingresso ingresso;
+} Cliente;
+
+typedef struct {
+    Ingresso* ingressos[MAX_SIZE];
     int topo;
 } Pilha;
 
@@ -19,66 +35,121 @@ int CheioPilha(Pilha *pilha){
     return(pilha->topo == MAX_SIZE -1);
 }
 
-int PilhaTopo(Pilha *pilha){
+Ingresso* PilhaTopo(Pilha *pilha){
     if(VazioPilha(pilha)){
         printf("Erro: A pilha está vazia.");
-        return -10;
+    }else {
+        return pilha->ingressos[pilha->topo];
     }
-    return pilha->itens[pilha->topo];
 }
 
-void Push(Pilha *pilha, int item){
+void Push(Pilha *pilha, Ingresso* item){
     if(CheioPilha(pilha)){
         printf("Erro: Pilha está cheia.\n");
         return;
     }
     pilha->topo++;
-    pilha->itens[pilha->topo] = item;
+    pilha->ingressos[pilha->topo] = item;
 }
 
-int Pop(Pilha *pilha){
+Ingresso* Pop(Pilha *pilha) {
     if(VazioPilha(pilha)){
         printf("Erro: Pilha está vazia");
-        return -10;
+    } else {
+        Ingresso* item = pilha->ingressos[pilha->topo];
+        pilha->topo--;
+        return item;
     }
-    int item = pilha->itens[pilha->topo];
-    pilha->topo--;
-    return item;
 }
 
 void LerPilha(Pilha *pilha){
     for(int i = 0; i <= pilha->topo; i++){
         printf("\n");
-        printf("Piha[%d]: %d", i, pilha->itens[i]);
+        printf("---------------\n");
+        printf("Piha[%d]: \n", i);
+        printf("Nome: %s\n", pilha->ingressos[i]->nome_filme);
+        printf("Sala: %d\n", pilha->ingressos[i]->sala);
+        printf("Horario: %dH\n", pilha->ingressos[i]->horario);
+        printf("Valor: R$%.2f", pilha->ingressos[i]->valor);
     }
     printf("\n");
 }
 
-int main(){
-    printf("teste");
+Pilha* cadastrarFilmes(Pilha* pilha, Pilha* pilha2, Pilha* pilha3) {
+    InicializaPilha(pilha);
+    InicializaPilha(pilha2);
+    InicializaPilha(pilha3);
 
-    int numero = 0;
+    //Define o nome do filme
+    const char *listaFilmes[10] = {
+        "O Poderoso Chefão",
+        "Jurassic Park",
+        "O Senhor dos Anéis: A Sociedade do Anel",
+        "La La Land",
+        "Os Vingadores",
+        "E.T. – O Extraterrestre",
+        "Clube da Luta",
+        "Titanic",
+        "O Exorcista",
+        "Parasita"
+    };
 
-    Pilha pilha;
-    Pilha pilha_aux;
-    InicializaPilha(&pilha);
+    for (int j = 0; j < 3; j++) {
+        int intFilme = rand() % 10;
+        char nomeFilme[50];
+        strcpy(nomeFilme, listaFilmes[intFilme]);
 
+        //Define o valor do ingresso
+        float aleatorio = (float)rand() / RAND_MAX;
+        float valor = 50 + aleatorio * (70 - 50);
+        for (int i = 0; i < MAX_SIZE; i++) {
+            Ingresso* ingresso = malloc(sizeof(Ingresso));
 
-    /*ADICIONAR NA PILHA - EX1*/
-    for(int i = 0; i < 5; i++){
-        printf("Digite o %d° número: ", i + 1);
-        scanf("%d", &numero);
-        getchar();
+            //Define o nome
+            strcpy(ingresso->nome_filme, nomeFilme);
 
-        Push(&pilha, numero);
+            //define valor
+            ingresso->valor = valor;
+
+            //Define a sala do ingresso
+            ingresso->sala = rand() % 10;
+            //Define horário do ingresso
+            ingresso->horario = rand() % (24 - 7 + 1) + 7;
+
+            if (j == 0) {
+                Push(pilha, ingresso);
+            } else if (j == 1) {
+                Push(pilha2, ingresso);
+            } else {
+                Push(pilha3, ingresso);
+            }
+
+        }
     }
 
-    LerPilha(&pilha); //EX3
+    return pilha, pilha2, pilha3;
+}
 
-    //EXERCÍCIO 4
-    InicializaPilha(&pilha_aux);
+int main(){
+    Pilha pilha, pilha2, pilha3;
+    srand(time(NULL));
 
-    LerPilha(&pilha_aux);//EX2
+    cadastrarFilmes(&pilha, &pilha2, &pilha3);
+
+    printf("\nPILHA 1\n");
+    printf("==============");
+    LerPilha(&pilha);
+
+    printf("\nPILHA 2\n");
+    printf("==============");
+    LerPilha(&pilha2);
+
+    printf("\nPILHA 3\n");
+    printf("==============");
+    LerPilha(&pilha3);
+
+    printf("Pressione ENTER para continuar...\n");
+    getchar();
 
     return 0;
 }
