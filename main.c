@@ -112,7 +112,7 @@ Pilha* cadastrarFilmes(Pilha* pilha, Pilha* pilha2, Pilha* pilha3) {
             ingresso->valor = valor;
 
             //Define a sala do ingresso
-            ingresso->sala = rand() % 10;
+            ingresso->sala = rand() % 10 + 1;
             //Define horário do ingresso
             ingresso->horario = rand() % (24 - 7 + 1) + 7;
 
