@@ -75,6 +75,26 @@ void LerPilha(Pilha *pilha){
     printf("\n");
 }
 
+int* buscaPorHorario(Pilha *pilha, int horario, int *qtd) {
+    int *indices = malloc(MAX_SIZE * sizeof(int));
+    *qtd = 0;
+
+    for (int i = 0; i < MAX_SIZE; i++) {
+        if (pilha->ingressos[i]->horario == horario) {
+            indices[*qtd] = i;
+            (*qtd)++;
+        }
+    }
+
+    if (*qtd == 0) {
+        printf("Não há sessões do filme %s no horario das %dH. \n", pilha->ingressos[0]->nome_filme, horario);
+    } else {
+        printf("Foram encontrados %d ingressos do filme %s no horario das %dH! \n", *qtd, pilha->ingressos[0]->nome_filme, horario);
+    }
+
+    return indices;
+}
+
 Pilha* cadastrarFilmes(Pilha* pilha, Pilha* pilha2, Pilha* pilha3) {
     InicializaPilha(pilha);
     InicializaPilha(pilha2);
@@ -148,8 +168,32 @@ int main(){
     printf("==============");
     LerPilha(&pilha3);
 
+    int horario;
+    int escolha;
+    int qtd;
+    int *indices = malloc(MAX_SIZE * sizeof(int));
+
+    printf("\n Digite o horario que gostaria de buscar: ");
+    scanf("%d", &horario);
+    getchar();
+
+    printf("\n Agora digite qual filme gostaria de buscar: ");
+    scanf("%d", &escolha);
+    getchar();
+    if (escolha == 1) {
+        indices = buscaPorHorario(&pilha, horario, &qtd);
+    } else if (escolha == 2) {
+        indices = buscaPorHorario(&pilha2, horario, &qtd);
+    } else if (escolha == 3) {
+        indices = buscaPorHorario(&pilha3, horario, &qtd);
+    }
+    for (int i = 0; i < qtd; i++) {
+        printf("Ingresso encontrado no incide: %d \n", indices[i]);
+    }
+
     printf("Pressione ENTER para continuar...\n");
     getchar();
+    free(indices);
 
     return 0;
 }
